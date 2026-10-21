@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minicarrinho de Compras</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 30px auto;
+        padding: 20px;
+      }
+
+      .produtos {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .card {
+        border: 1px solid #ccc;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+        flex: 1;
+      }
+
+      .card button {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .card button:hover {
+        background: #218838;
+      }
+
+      .carrinho-box {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      li {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+      }
+
+      li:hover {
+        background: #ffecec;
+      }
+
+      .total-box {
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 15px;
+        text-align: right;
+      }
+
+      #btn-esvaziar {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 9px 14px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 10px;
+      }
+
+      #btn-esvaziar:hover {
+        background: #c82333;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>Frutas</h2>
+
+    <div class="produtos">
+      <div class="card">
+        <h3>Maçã</h3>
+        <p>R$ 3,50</p>
+        <button class="btn-add" data-nome="Maçã" data-preco="3.50">
+          Adicionar
+        </button>
+      </div>
+
+      <div class="card">
+        <h3>Banana</h3>
+        <p>R$ 2,00</p>
+        <button class="btn-add" data-nome="Banana" data-preco="2.00">
+          Adicionar
+        </button>
+      </div>
+
+      <div class="card">
+        <h3>Abacate</h3>
+        <p>R$ 6,00</p>
+        <button class="btn-add" data-nome="Abacate" data-preco="6.00">
+          Adicionar
+        </button>
+      </div>
+    </div>
+
+    <div class="carrinho-box">
+      <h3>Seu Carrinho</h3>
+
+      <button id="btn-esvaziar">Esvaziar Carrinho</button>
+
+      <ul id="lista-carrinho"></ul>
+
+      <div class="total-box">Total: R$ <span id="valor-total">0.00</span></div>
+    </div>
+
+    <script>
+      const botoes = document.querySelectorAll(".btn-add");
+      const listaCarrinho = document.querySelector("#lista-carrinho");
+      const valorTotalEl = document.querySelector("#valor-total");
+      const btnEsvaziar = document.querySelector("#btn-esvaziar");
+
+      let total = 0;
+
+      let carrinho = {};
+
+      botoes.forEach((botao) => {
+        botao.addEventListener("click", () => {
+          const nome = botao.dataset.nome;
+          const preco = parseFloat(botao.dataset.preco);
+
+          if (carrinho[nome]) {
+            carrinho[nome].quantidade++;
+          } else {
+            carrinho[nome] = {
+              preco: preco,
+              quantidade: 1,
+            };
+          }
+
+          total += preco;
+
+          atualizarCarrinho();
+        });
+      });
+
+      function atualizarCarrinho() {
+        listaCarrinho.innerHTML = "";
+
+        for (let nome in carrinho) {
+          const item = carrinho[nome];
+
+          const li = document.createElement("li");
+
+          li.innerHTML = `
+                    <span>${nome} x${item.quantidade}</span>
+                    <span>R$ ${(item.preco * item.quantidade).toFixed(2)}</span>
+                `;
+
+          li.addEventListener("click", () => {
+            total -= item.preco;
+
+            item.quantidade--;
+
+            if (item.quantidade === 0) {
+              delete carrinho[nome];
+            }
+
+            atualizarCarrinho();
+          });
+
+          listaCarrinho.appendChild(li);
+        }
+
+        valorTotalEl.textContent = total.toFixed(2);
+      }
+
+      btnEsvaziar.addEventListener("click", () => {
+        listaCarrinho.innerHTML = "";
+
+        carrinho = {};
+
+        total = 0;
+
+        valorTotalEl.textContent = "0.00";
+      });
+    </script>
+  </body>
+</html>
